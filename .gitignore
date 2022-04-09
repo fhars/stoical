@@ -1,0 +1,12 @@
+/config.h
+/config.log
+/config.status
+/doc/stoical.1
+/doc/words
+/doc/words.d/
+/vim/syntax/
+/src/.depend
+/src/*.o
+/stoical
+Makefile
+*~

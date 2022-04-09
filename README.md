@@ -1,9 +1,26 @@
+# Preface (2022)
 
-S  T  O  I  C  A  L					http://stoical.sf.net
+This is an experiment in software archeology, someone on some orange
+forum nerdsniped me by asking what it would take to compile some
+ancient Forth-like language written in C that hadn't been run in
+twenty years on a modern machine.
+
+Turns out, is is not a good idea to store a pthread_t in a float
+variable...
+
+I make not guarantees about this code except that it compile on my
+machine. I don't think that the interpreter ever frees memory
+allocated for strings, and it segfaults when one of the directories
+the call in `make doc` wants to write to is write protected.  So there
+is still much fun to be had if you want to use this.  Share and enjoy.
+
+# README (2002)
+
+## S  T  O  I  C  A  L					http://stoical.sf.net
 
 (c) 2002 Jonathan Moore Liles
 
-----Structure - -     -
+### Structure
 
 STOICAL's implementation is based largely on my own feelings about efficiency.
 I have written the source code in C so that it can interface with the libraries
@@ -31,7 +48,7 @@ on the future.
 STOICAL has a fascinating history, I suggest you read all of the included
 documentation.
 
-----Compilation and Installation - -      -
+### Compilation and Installation
 
 STOICAL was developed with the help of Debian GNU/Linux. However, any other
 modern Linux distribution should do fine, provided that you have the
@@ -54,7 +71,7 @@ in your ~/.vim directory, as they will greatly enhance your experience with
 STOICAL. Emacs users have an editor that is a language in and of itself, and
 therefore have no need for STOICAL; Or friends, for that matter ;-)
 
-----Platforms - -        -
+### Platforms
 
 STOICAL has been built and tested on the following platforms:
 
@@ -69,13 +86,13 @@ an email explaining your situation to the following address:
 
 "stoical-support" <stoical-support@lists.sf.net>
 
-----Documentation - -        -
+### Documentation
 
 During the build process, STOICAL will generate documentation from its C and
 STOICAL sources. This, and other, more general documentation can be found under
 the doc/ subdirectory.
 
-----Examples - -       -
+### Examples
 
 The examples/ tree contains sample source code that you should be able to run
 immediately after building STOICAL (assuming that your build options were
