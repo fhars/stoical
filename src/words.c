@@ -1833,7 +1833,8 @@ end()
  */
 begin(accept)
 	struct sockaddr_in sin;
-	int s, len;
+	int s;
+	socklen_t len;
 	t_sock *nsock;
 	t_sock *sock;
 
@@ -4026,6 +4027,7 @@ begin(compile)
 				     REG_EXTENDED ^ re_flags );
 							
 			/* FIXME: check for errors... */
+			(void) v;
 
 			if ( re_flags & REG_SUBST )
 			{
