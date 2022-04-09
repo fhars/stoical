@@ -60,10 +60,10 @@ void st_pcell ( cell *a )
 	{
 		case T_STR:
 		{
-			if ( memchr( &a->v.s->s, ' ', a->v.s->l ) == NULL )
-				fprintf(stderr, "\'%s ", &a->v.s->s );
+			if ( memchr( a->v.s->s, ' ', a->v.s->l ) == NULL )
+				fprintf(stderr, "\'%s ", a->v.s->s );
 			else
-				fprintf(stderr, "\"%s\" ", &a->v.s->s );
+				fprintf(stderr, "\"%s\" ", a->v.s->s );
 			break;
 		}
 		case T_REF:

@@ -83,7 +83,7 @@ typedef unsigned char type_t;
 /* all strings on the stack will have this format. */
 typedef struct {
 	unsigned int l;	/* length of string */
-	char s;		/* string itself */
+	char s[];		/* string itself */
 } string;
 typedef void(function)();
 /* value portion of a stack cell */
@@ -173,7 +173,7 @@ typedef struct {
 #define filpush(st,k) (*(st++) = (cell){ T_FIL, { p: k }})
 
 
-#define scpop(st) ( &((--st)->v.s->s) )
+#define scpop(st) ( ((--st)->v.s->s) )
 
 #define filpop(s) ((--s)->v.p)
 #define ppop(s) ((--s)->v.p)
