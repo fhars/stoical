@@ -139,8 +139,7 @@ void st_pword ( struct voc_entry *entry, struct voc_entry **high )
 		else if ( strcmp( (*p)->name, "l()" ) == 0 )
 		{
 			p++;
-			st_pcell( ((cell*)p)++ );
-			p--;
+			st_pcell( (cell*)p );
 		}
 		else if ( strcmp( (*p)->name, "r()" ) == 0 ||
 			  strcmp( (*p)->name, "rs()" ) == 0 )

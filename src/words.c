@@ -2001,7 +2001,8 @@ begin(hash_right_angle)
 	drop(sst);
 
 	/* Set the length byte in the string */
-	*((char*)hash_ptr.parm.v.p - 1) = hash_cnt.parm.v.f;
+        unsigned char l = hash_cnt.parm.v.f;
+        memcpy(hash_ptr.parm.v.p - 1, &l, 1);
 	
 	push(sst,hash_ptr.parm);
 	push(sst,hash_cnt.parm);
@@ -2009,7 +2010,9 @@ end()
 begin(hash_put)
 	/* Place character represented by the value at TOS into
 	 * the buffer. Decrement the pointer, and increment the count. */
-	*(--(char*)hash_ptr.parm.v.p) = fpop(sst);
+	char v = fpop(sst);
+	hash_ptr.parm.v.p -= sizeof(char);
+	memcpy(hash_ptr.parm.v.p, &v, sizeof(char));
 	
 	hash_cnt.parm.v.f++;
 end()
@@ -2788,8 +2791,8 @@ begin(l_)
 
 	ip++;
 	a = (cell*)ip;
-	
-	((cell*)ip)++;
+
+	ip = (cell*)ip + 1;
 	ip--;
 
 	push(sst,*a);
@@ -3021,7 +3024,7 @@ begin(r_)
 
 	if ( regexec( reg, s, matches, p, 0 ) == 0 )
 	{
-	 	int i, c;
+		int i, c;
 		string *n;
 
 		if ( p[0].rm_so == -1 )
