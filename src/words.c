@@ -1359,7 +1359,7 @@ begin(readln)
 	 * buffer to accommodate. */
 	for (;;)
 	{
-		n = realloc( n, sizeof(string) + l + BUFSIZ );
+		n = realloc( n, sizeof(string) + l + BUFSIZ + 1 );
 		
 		/* setup overflow detector */
 		(n->s)[ l + BUFSIZ ] = 'x';
