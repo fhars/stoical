@@ -86,11 +86,11 @@ begin(thread)
 	data->io	= malloc( sizeof( struct iopoint ) );
 	memcpy( data->io, io, sizeof( struct iopoint ) );
 	
-	pthread_create( &data->thread, NULL, (void*)st_start, data );
+	pthread_create( &data->thread, NULL, st_start, data );
 
-	printk("launching thread %i", (ub4)data->thread);
+	printk("launching thread %08lx", data->thread);
 
-	fpush(sst,(ub4)data->thread);
+	fpush(sst,data->thread);
 end()
 /**(thread) detach
  * "() foo thread DETACH"
@@ -98,7 +98,9 @@ end()
  * you cannot retrieve it's return value.
  */
 begin(detach)
-	pthread_detach( (pthread_t)((ub4)fpop(sst)) );
+	pthread_t thread = (pthread_t) fpop(sst);
+	printk("detaching thread %08lx\n", thread);
+	pthread_detach( thread );
 end()
 /**(thread) join
  * "() foo thread JOIN"
@@ -107,7 +109,9 @@ end()
  */
 begin(join)
 	void *status;
-	pthread_join( (pthread_t)((ub4)fpop(sst)), &status );
+	pthread_t thread = (pthread_t) fpop(sst);
+	printk("  joining thread %08lx\n", thread);
+	pthread_join( thread, &status );
 	fpush(sst,(long)status);
 end()
 /**(thread) me
@@ -370,7 +374,7 @@ end()
  * Perform floating point addition of TOS and TOS-1.
  */
 begin(add)
-	float v = fpop(sst);
+	double v = fpop(sst);
 	v += fpop(sst);
 		
 	fpush(sst,v);
@@ -380,7 +384,7 @@ end()
  * Subtract TOS from TOS-1.
  */
 begin(sub)
-	float v = idx(sst,1).v.f;
+	double v = idx(sst,1).v.f;
 	v -= fpop(sst);
 	drop(sst);
 	
@@ -391,7 +395,7 @@ end()
  * Perform floating point division of TOS-1 by TOS.
  */
 begin(div)
-	float v = idx(sst,1).v.f;
+	double v = idx(sst,1).v.f;
 	v /= fpop(sst);
 	drop(sst);
 
@@ -402,7 +406,7 @@ end()
  * Multiply TOS-1 by TOS.
  */
 begin(mul)
-	float v = fpop(sst);
+	double v = fpop(sst);
 	v *= fpop(sst);
 
 	fpush(sst,v);
@@ -424,7 +428,7 @@ end()
  * Integer divide. Leaves both quotient and remainer on stack.
  */ 
 begin(divmod)
-	float a, b;
+	double a, b;
 
 	b = fpop(sst);
 	a = fpop(sst);
@@ -434,7 +438,7 @@ begin(divmod)
 end()
 /**(unary) int
  * "( 1.3 - 1 )"
- * Round float at TOS to an integer value. Not very pretty, as the gritty bits
+ * Round double at TOS to an integer value. Not very pretty, as the gritty bits
  * are left to your specific C compiler. But, since I've been GCC-ific so far,
  * why stop now? FIXME: My name is pandora. This is my box.
  */
@@ -2115,8 +2119,8 @@ end()
  * Test TOS and TOS-1 for equality.
  */
 begin(feq)
-	float v1 = fpop(sst);
-	float v2 = fpop(sst);
+	double v1 = fpop(sst);
+	double v2 = fpop(sst);
 	if ( v1 == v2 )
 		fpush(sst,TRUE);
 	else
@@ -2138,8 +2142,8 @@ end()
  * Test TOS and TOS-1 for inequality.
  */
 begin(fne)
-	float  v1 = fpop(sst);
-	float  v2 = fpop(sst);
+	double  v1 = fpop(sst);
+	double  v2 = fpop(sst);
 	if ( v1 != v2 )
 		fpush(sst,TRUE);
 	else
@@ -2161,8 +2165,8 @@ end()
  * TRUE if TOS-1 is less than TOS.
  */
 begin(lt)
-	float  v1 = fpop(sst);
-	float  v2 = fpop(sst);
+	double  v1 = fpop(sst);
+	double  v2 = fpop(sst);
 	if ( v1 > v2 )
 		fpush(sst,TRUE);
 	else
@@ -2173,8 +2177,8 @@ end()
  * TRUE if TOS-1 is greater than TOS.
  */
 begin(gt)
-	float  v1 = fpop(sst);
-	float  v2 = fpop(sst);
+	double  v1 = fpop(sst);
+	double  v2 = fpop(sst);
 	if ( v1 < v2 )
 		fpush(sst,TRUE);
 	else
@@ -2185,8 +2189,8 @@ end()
  * TRUE if TOS-1 is less than or equal to TOS.
  */
 begin(le)
-	float  v1 = fpop(sst);
-	float  v2 = fpop(sst);
+	double  v1 = fpop(sst);
+	double  v2 = fpop(sst);
 	if ( v1 >= v2 )
 		fpush(sst,TRUE);
 	else
@@ -2197,8 +2201,8 @@ end()
  * TRUE if TOS-1 is greater than or equal to TOS.
  */
 begin(ge)
-	float  v1 = fpop(sst);
-	float  v2 = fpop(sst);
+	double  v1 = fpop(sst);
+	double  v2 = fpop(sst);
 	if ( v1 <= v2 )
 		fpush(sst,TRUE);
 	else
@@ -2384,7 +2388,7 @@ end()
  */
 begin(rtn)
 	printk("Goodbye, Dave.");
-	return;
+	return NULL;
 end()
 /**(compiler) bye
  * Exit the entire process. (with return value of zero);
@@ -2530,7 +2534,7 @@ end()
  * type-checking enabled.
  */
 begin(_paren_colon_brace)
-	int i, size, cols;
+	unsigned int i, size, cols;
 	ub4 type, mask;
 	struct code *c;
 	string *name;
@@ -2827,7 +2831,7 @@ end()
  * n	need not return the matches, just a boolean
  */
 begin(x)
-	int i;
+	unsigned int i;
 
 	word();
 	drop(sst);
@@ -3076,7 +3080,7 @@ end()
 #endif
 	
 #define st_iliteral() {  \
-	float v; \
+	double v; \
 	char *s; \
 	char *end; \
  \
@@ -3540,7 +3544,7 @@ end()
  * Set type of TOS-1 to the value of TOS. 
  */
 begin(retype)
-	float tp = fpop(sst);
+	double tp = fpop(sst);
 	idx(sst,1).type = tp;
 end()
 /**(compiler) prompt

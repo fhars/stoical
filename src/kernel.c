@@ -46,10 +46,10 @@ const char *a_types[] =
 
 /* st_start
  * This is the entry point for new threads. */
-void
-st_start (struct thread_data *data)
+void *
+st_start (void * vData)
 {
-
+struct thread_data *data = vData;
 struct vocabulary *voc;
 int i, count;
 struct voc_item item;
@@ -120,16 +120,16 @@ struct voc_entry hash_ptr;
 struct voc_entry *line;
 
 struct voc_entry *args = NULL;
-struct voc_entry warnings =	{ type: A_CONST, parm:
-				{ type: T_FLT, v: { f: TRUE } } };
-struct voc_entry radix	  =	{ type: A_CONST, parm:
-				{ type: T_FLT, v: { f: 10 } } };
+struct voc_entry warnings =	{ .type = A_CONST, .parm =
+				{ .type = T_FLT, .v = { .f = TRUE } } };
+struct voc_entry radix	  =	{ .type = A_CONST, .parm =
+				{ .type = T_FLT, .v = { .f = 10 } } };
 struct iopoint *io;
 
 #ifdef REGEX
 /* maximum number of sub matches for regexps */
-struct voc_entry hash_match =	{ type: A_CONST, parm:
-				{ type: T_FLT, v: { f: 10 } } };
+struct voc_entry hash_match =	{ .type = A_CONST, .parm =
+				{ .type = T_FLT, .v = { .f = 10 } } };
 long re_flags = 0;
 #endif
 
@@ -348,6 +348,7 @@ exec(*adr(next));
 printk("Outer loop (NEXT) has returned, something is broken!");
 
 	}
+return NULL;
 }
 
 int main (int argc, char **argv)
