@@ -602,8 +602,8 @@ begin(bracket_bang)
 		/* source is a string. store a copy its value in the
 		 * word */
 		ptr->type = T_STR;
-		ptr->v.s = malloc( sizeof(string) + a.v.s->l + 2 );
-		memcpy( ptr->v.s, a.v.s, sizeof(string) + a.v.s->l + 2 );
+		ptr->v.s = malloc( sizeof(string) + a.v.s->l + 1 );
+		memcpy( ptr->v.s, a.v.s, sizeof(string) + a.v.s->l + 1 );
 	}
 	else
 		*ptr = a;
@@ -2001,8 +2001,8 @@ begin(hash_right_angle)
 	drop(sst);
 
 	/* Set the length byte in the string */
-        unsigned char l = hash_cnt.parm.v.f;
-        memcpy(hash_ptr.parm.v.p - 1, &l, 1);
+	unsigned char l = hash_cnt.parm.v.f;
+	memcpy(hash_ptr.parm.v.p - 1, &l, 1);
 	
 	push(sst,hash_ptr.parm);
 	push(sst,hash_cnt.parm);
