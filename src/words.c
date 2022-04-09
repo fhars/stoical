@@ -370,9 +370,8 @@ end()
  * Perform floating point addition of TOS and TOS-1.
  */
 begin(add)
-	float v;
-	
-	v = fpop(sst) + fpop(sst);
+	float v = fpop(sst);
+	v += fpop(sst);
 		
 	fpush(sst,v);
 end()
@@ -381,9 +380,8 @@ end()
  * Subtract TOS from TOS-1.
  */
 begin(sub)
-	float v;
-
-	v = idx(sst,1).v.f - fpop(sst);
+	float v = idx(sst,1).v.f;
+	v -= fpop(sst);
 	drop(sst);
 	
 	fpush(sst,v);
@@ -393,9 +391,8 @@ end()
  * Perform floating point division of TOS-1 by TOS.
  */
 begin(div)
-	float v;
-
-	v = idx(sst,1).v.f / fpop(sst);
+	float v = idx(sst,1).v.f;
+	v /= fpop(sst);
 	drop(sst);
 
 	fpush(sst,v);
@@ -405,9 +402,8 @@ end()
  * Multiply TOS-1 by TOS.
  */
 begin(mul)
-	float v;
-
-	v = fpop(sst) * fpop(sst);
+	float v = fpop(sst);
+	v *= fpop(sst);
 
 	fpush(sst,v);
 end()
@@ -417,9 +413,8 @@ end()
  * return the remainder.
  */
 begin(mod)
-	float v;
-
-	v = (long)idx(sst,1).v.f % (long)fpop(sst);
+	long v = (long)idx(sst,1).v.f;
+	v %= (long)fpop(sst);
 	drop(sst);
 
 	fpush(sst,v);
@@ -904,7 +899,8 @@ end()
  * Duplicate TOS-1.
  */
 begin(over)
-	push(sst,idx(sst,1));	
+	cell v = idx(sst,1);
+	push(sst,v);
 end()
 /**(stack) nip - (new)
  * "( a b - b )"
@@ -982,8 +978,8 @@ begin(idup)
 	int n;
 	
 	n = fpop(sst);
-
-	push(sst,*(sst - n));
+	cell v = *(sst - n);
+	push(sst,v);
 end()
 /**(stack) idrop - (new)
  * "( a b c 3 - b c )"
@@ -1495,7 +1491,7 @@ begin(stat)
 		
 		fpush(sst,TRUE);
 	}
- 	else 
+	else
 	{
 		/* discard filename */
 		drop(sst);
@@ -1925,7 +1921,8 @@ end()
  */
 begin(shutdown)
 	/* FIXME: When should I close this stream? */
-	shutdown(((t_file *)ppop(sst))->fd, fpop(sst));
+	int fd = ((t_file *)ppop(sst))->fd;
+	shutdown(fd, fpop(sst));
 end()
 #ifdef HAVE_SYS_SENDFILE_H
 /**(io) sendfile - (new)
@@ -2117,7 +2114,9 @@ end()
  * Test TOS and TOS-1 for equality.
  */
 begin(feq)
-	if ( fpop(sst) == fpop(sst) )
+	float v1 = fpop(sst);
+	float v2 = fpop(sst);
+	if ( v1 == v2 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2126,7 +2125,9 @@ end()
  * Compare two strings.
  */
 begin(dolar_eq)
-	if ( strcmp(spop(sst)->s,spop(sst)->s) == 0 )
+	char *s1 = spop(sst)->s;
+	char *s2 = spop(sst)->s;
+	if ( strcmp(s1,s2) == 0 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2136,7 +2137,9 @@ end()
  * Test TOS and TOS-1 for inequality.
  */
 begin(fne)
-	if ( fpop(sst) != fpop(sst) )
+	float  v1 = fpop(sst);
+	float  v2 = fpop(sst);
+	if ( v1 != v2 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2145,7 +2148,9 @@ end()
  * Compare two strings.
  */
 begin(dolar_ne)
-	if ( strcmp(spop(sst)->s,spop(sst)->s) != 0 )
+	char *s1 = spop(sst)->s;
+	char *s2 = spop(sst)->s;
+	if ( strcmp(s1,s2) != 0 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2155,7 +2160,9 @@ end()
  * TRUE if TOS-1 is less than TOS.
  */
 begin(lt)
-	if ( fpop(sst) > fpop(sst) )
+	float  v1 = fpop(sst);
+	float  v2 = fpop(sst);
+	if ( v1 > v2 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2165,7 +2172,9 @@ end()
  * TRUE if TOS-1 is greater than TOS.
  */
 begin(gt)
-	if ( fpop(sst) < fpop(sst) )
+	float  v1 = fpop(sst);
+	float  v2 = fpop(sst);
+	if ( v1 < v2 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2175,7 +2184,9 @@ end()
  * TRUE if TOS-1 is less than or equal to TOS.
  */
 begin(le)
-	if ( fpop(sst) >= fpop(sst) )
+	float  v1 = fpop(sst);
+	float  v2 = fpop(sst);
+	if ( v1 >= v2 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2185,7 +2196,9 @@ end()
  * TRUE if TOS-1 is greater than or equal to TOS.
  */
 begin(ge)
-	if ( fpop(sst) <= fpop(sst) )
+	float  v1 = fpop(sst);
+	float  v2 = fpop(sst);
+	if ( v1 <= v2 )
 		fpush(sst,TRUE);
 	else
 		fpush(sst,FALSE);
@@ -2650,7 +2663,7 @@ begin(right_brace)
 
 	st_minus_check();
 
-	oldcst  = ppop(sst);
+	oldcst	= ppop(sst);
 
 	size = cst - oldcst;
 	
@@ -3526,7 +3539,8 @@ end()
  * Set type of TOS-1 to the value of TOS. 
  */
 begin(retype)
-	idx(sst,1).type = fpop(sst);
+	float tp = fpop(sst);
+	idx(sst,1).type = tp;
 end()
 /**(compiler) prompt
  * Display the compiler prompt on the output device.
@@ -4107,7 +4121,9 @@ end()
  */
 begin(left_angle_env)
 	printk("setenv()");
-	setenv(scpop(sst), scpop(sst), 1); /* 1 means overwrite */
+	char *s1 = spop(sst)->s;
+	char *s2 = spop(sst)->s;
+	setenv(s1, s2, 1); /* 1 means overwrite */
 end()
 /**(compiler) eval
  * Execute STOICAL source code in string at TOS.
